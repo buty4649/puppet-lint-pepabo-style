@@ -19,3 +19,37 @@ PuppetLint.new_check(:multiple_include) do
     }
   end
 end
+
+PuppetLint.new_check(:enclosed_reserved_words) do
+  def check
+    reserved_words = {
+      'enable' => ['true', 'false', 'manual'],
+      'ensure' => ['present', 'absent', 'file', 'directory', 'link', 'installed', 'purged', 'held', 'lates'],
+      'force'  => ['true', 'false', 'yes', 'no'],
+    }
+    tokens.select{|t|
+      t.type == :NAME && reserved_words.key?(t.value)
+    }
+    .select{|t|
+      words = t.value
+      # eg. ensure => present
+      token = t.next_code_token.next_code_token
+      if reserved_words[words].include? token.value
+        if token.type == :SSTRING
+          notify :warning, {
+            :message => 'enclosed reserved words in single quotes',
+            :line    => token.line,
+            :column  => token.column,
+          }
+        end
+        if token.type == :STRING
+          notify :warning, {
+            :message => 'enclosed reserved words in double quotes',
+            :line    => token.line,
+            :column  => token.column,
+          }
+        end
+      end
+    }
+  end
+end

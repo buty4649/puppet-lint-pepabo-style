@@ -25,3 +25,23 @@ describe 'multiple_include' do
     end
   end
 end
+
+describe 'enclosed_reserved_words' do
+  let(:msg) { 'check reserved words enclosed in quotes' }
+
+  context 'not enclosed reserved words' do
+    let(:code) { "ensure => present" }
+
+    it 'should not detect any problems' do
+      expect(problems).to have(0).problems
+    end
+  end
+
+  context 'enclosed reserved words' do
+    let(:code) { "ensure => 'present'" }
+
+    it 'should not detect any problems' do
+      expect(problems).to have(1).problems
+    end
+  end
+end
