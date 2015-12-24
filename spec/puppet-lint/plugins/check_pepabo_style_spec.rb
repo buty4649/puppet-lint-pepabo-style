@@ -20,7 +20,7 @@ describe 'multiple_include' do
       end
 
       it 'should create a warning' do
-        expect(problems).to contain_warning(msg).on_line(1).in_column(14)
+        expect(problems).to contain_warning(msg).on_line(1).in_column(12)
       end
     end
   end
