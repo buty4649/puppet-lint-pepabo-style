@@ -53,3 +53,30 @@ PuppetLint.new_check(:enclosed_reserved_words) do
     }
   end
 end
+
+PuppetLint.new_check(:newline_between_the_same_resource) do
+  def check
+    resource_indexes.select{|t|
+      t[:tokens].select{|t|
+        t.type == :SEMIC && t.next_code_token.type != :RBRACE
+      }
+      .select{|t|
+        count = 0
+        token = t.next_token
+        while [:NEWLINE, :WHITESPACE, :INDENT].include? token.type
+          if token.type == :NEWLINE
+            count+=1
+          end
+          token = token.next_token
+        end
+        if count < 2
+          notify :warning, {
+            :message => 'blank lines not between the same resource',
+            :line    => t.line,
+            :column  => t.column,
+          }
+        end
+      }
+    }
+  end
+end

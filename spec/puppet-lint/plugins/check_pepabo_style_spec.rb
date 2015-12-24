@@ -40,7 +40,44 @@ describe 'enclosed_reserved_words' do
   context 'enclosed reserved words' do
     let(:code) { "ensure => 'present'" }
 
+    it 'should detect any problems' do
+      expect(problems).to have(1).problems
+    end
+  end
+end
+
+describe 'newline_between_the_same_resource' do
+  let(:msg) { 'check newline between the same resource' }
+
+  context 'newline between the same resource' do
+    let(:code) { <<-"EOS"
+                 file {
+                  'aaa':
+                    ensure => created;
+
+                  'bbb':
+                    ensure => created;
+                 }
+                 EOS
+               }
+
     it 'should not detect any problems' do
+      expect(problems).to have(0).problems
+    end
+  end
+
+  context 'newline not between the same resource' do
+    let(:code) { <<-"EOS"
+                 file {
+                  'aaa':
+                    ensure => created;
+                  'bbb':
+                    ensure => created;
+                 }
+                 EOS
+               }
+
+    it 'should detect any problems' do
       expect(problems).to have(1).problems
     end
   end
